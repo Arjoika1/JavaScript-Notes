@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.0.2/marked.min.js" integrity="sha512-1CPEwUeWWvFhr9h3Wj8Xni1ERD06bgiSN+2uA/Cw3cFqSESS04nmqzutUXzHZwcnDi/XQX9iJ/HKqJ5njB3Sbg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="style.css">
+    <title>Notes</title>
+</head>
+<body>
+    <button class="add" id="add"><i class="fas fa-plus"></i></button>     
+    </div>
+</body>
+</html>
+
+
+
+<script>
+const addBtn=document.getElementById('add');
+
+const notes=JSON.parse(localStorage.getItem("notes"));//to retrieve items from the local storage
+
+if(notes)
+{
+    notes.forEach(element => {
+        addNewNote(element);
+    });
+}
+
+
+addBtn.addEventListener('click',()=>
+{
+   addNewNote();
+});
+
+function addNewNote(text=""){
+    const note=document.createElement('div');//creates a new div
+    note.classList.add('note');//adds note class to the div above
+
+    note.innerHTML=`
+       
+        <div class="tools">
+            <button class="edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="delete">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+         <div class="main ${text?"":"hidden"}"> </div>
+         <textarea class="${text?"hidden":""}" ></textarea>
+             `;
+    
+
+const editBtn=note.querySelector(".edit");
+const deleteBtn=note.querySelector(".delete");
+
+const main=note.querySelector(".main");
+const textArea=note.querySelector("textarea");
+
+textArea.value=text;
+main.innerHTML=marked(text);
+
+
+editBtn.addEventListener('click',()=>
+ {
+    main.classList.toggle("hidden");//toggles b/w classes i.e. removes the class hidden 1st and returns false and if class does'nt exist adds the class and returns false 
+    textArea.classList.toggle("hidden");
+ }
+);
+
+deleteBtn.addEventListener('click',()=>
+{
+    note.remove();
+    updateLS();
+});
+
+textArea.addEventListener("input",(e)=>
+{
+ const{value}=e.target;
+ main.innerHTML=marked(value);
+ updateLS();
+});
+
+    document.body.appendChild(note);
+
+function updateLS()
+{
+    const notesText=document.querySelectorAll("textarea");
+    const notes=[];
+  notesText.forEach((note)=>
+  {
+      notes.push(note.value);
+  });
+  localStorage.setItem("notes",JSON.stringify(notes));//to add items to local storage of the device
+}
+}
+
+</script>
